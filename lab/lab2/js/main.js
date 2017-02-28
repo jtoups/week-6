@@ -44,6 +44,8 @@ For our myStyle function, we want a different fillColor to be returned depending
 on the day of the week. If you need help, review http://leafletjs.com/examples/geojson.html for
 working examples of this function.
 
+var allDays = _.map(tempdata.features, function(item) {return item.properities.COLLDAY;});
+_.groupby(allDays)
 ## Task 3
 
 You might have noticed that two of the features we are mapping have empty
@@ -126,9 +128,19 @@ of the application to report this information.
 var dataset = "https://raw.githubusercontent.com/CPLN692-MUSA611/datasets/master/geojson/philadelphia-garbage-collection-boundaries.geojson"
 var featureGroup;
 
-var myStyle = function(feature) {
-  return {};
+var myStyle = function(feature){
+  switch (feature.properties.COLLDAY) {
+    case "MON": return {color: "#bef9c3"};
+    case "TUE": return {color: "#efdca9"};
+    case "WED": return {color: "#e0f380"};
+    case "THU": return {color: "#336f9a"};
+    case "FRI": return {color: "#2bf041"};
+
+  }
+  return{};
 };
+
+
 
 var showResults = function() {
   /* =====================
@@ -143,9 +155,23 @@ var showResults = function() {
   $('#results').show();
 };
 
+var returnDOWName = function(dayOfWeek){
+  switch (dayOfWeek){
+    case "MON": return "Monday";
+    case "TUE": return "Tuesday";
+    case "WED": return "Wednesday";
+    case "THU": return "Thursday";
+    case "FRI": return "Friday";
+  }
+  return{};
+};
+
 
 var eachFeatureFunction = function(layer) {
   layer.on('click', function (event) {
+    var collectionDay = layer.feature.properties.COLLDAY;
+    console.log(collectionDay);
+    $('.day-of-week').text(returnDOWName(collectionDay));
     /* =====================
     The following code will run every time a layer on the map is clicked.
     Check out layer.feature to see some useful data about the layer that
@@ -157,7 +183,12 @@ var eachFeatureFunction = function(layer) {
 };
 
 var myFilter = function(feature) {
+  if (feature.properties.COLLDAY === " "){
+    return false;
+    }
+    else {
   return true;
+}
 };
 
 $(document).ready(function() {
